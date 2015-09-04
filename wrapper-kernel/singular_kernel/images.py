@@ -4,10 +4,10 @@ import os
 
 #from IPython.
 
-_TEXT_SAVED_IMAGE = "gap_kernel: saved image data to:"
+_TEXT_SAVED_IMAGE = "Singular_kernel: saved image data to:"
 
 image_setup_cmd = """
-sh /home/makx/ac/gap/bin/gap.sh -b
+
 """
 
 # % _TEXT_SAVED_IMAGE

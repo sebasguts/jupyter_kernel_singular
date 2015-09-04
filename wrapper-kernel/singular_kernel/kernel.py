@@ -18,8 +18,8 @@ from .images import (
     extract_image_filenames, display_data_for_image, image_setup_cmd
 )
 
-class GAPKernel(Kernel):
-    implementation = 'gap_kernel'
+class SingularKernel(Kernel):
+    implementation = 'singular_kernel'
     implementation_version = __version__
 
     @property
@@ -32,30 +32,30 @@ class GAPKernel(Kernel):
     @property
     def banner(self):
         if self._banner is None:
-            self._banner = "GAP kernel"
+            self._banner = "Singular kernel"
         return self._banner
 
-    language_info = {'name': 'gap',
+    language_info = {'name': 'singular',
                      'codemirror_mode': 'shell',
                      'mimetype': 'text/x-sh',
-                     'file_extension': '.g'}
+                     'file_extension': '.s'}
 
     def __init__(self, **kwargs):
         Kernel.__init__(self, **kwargs)
-        self._start_gap()
+        self._start_singular()
 
-    def _start_gap(self):
+    def _start_singular(self):
         # Signal handlers are inherited by forked processes, and we can't easily
         # reset it from the subprocess. Since kernelapp ignores SIGINT except in
         # message handlers, we need to temporarily reset the SIGINT handler here
         # so that bash and its children are interruptible.
         sig = signal.signal(signal.SIGINT, signal.SIG_DFL)
         try:
-            self.gapwrapper = replwrap.REPLWrapper('gap.sh -n -b -T gap_kernel/setup.g', u'gap# ',
+            self.singularwrapper = replwrap.REPLWrapper('Singular -t --ticks-per-sec 1000 --echo=0 --no-warn --cntrlc=a', u'> ',
                               None,
                               None,
-                              continuation_prompt=u'+')
-            self.gapwrapper.run_command("\n");
+                              continuation_prompt=u'.')
+            self.singularwrapper.run_command("\n");
         finally:
             signal.signal(signal.SIGINT, sig)
 
@@ -71,15 +71,15 @@ class GAPKernel(Kernel):
         interrupted = False
         try:
             print("running command: %s" % (code.rstrip()))
-            output = self.gapwrapper.run_command(code.rstrip(), timeout=None)
+            output = self.singularwrapper.run_command(code.rstrip(), timeout=None)
             print("got output %s" % output)
         except KeyboardInterrupt:
-            self.gapwrapper.child.sendintr()
+            self.singularwrapper.child.sendintr()
             interrupted = True
-            self.gapwrapper._expect_prompt()
-            output = self.gapwrapper.child.before
+            self.singularwrapper._expect_prompt()
+            output = self.singularwrapper.child.before
         except EOF:
-            output = self.gapwrapper.child.before + 'Restarting GAP'
+            output = self.singularwrapper.child.before + 'Restarting Singular'
             self._start_gap()
 
         if not silent:
@@ -103,7 +103,7 @@ class GAPKernel(Kernel):
             return {'status': 'abort', 'execution_count': self.execution_count}
 
         try:
-            exitcode = int(self.gapwrapper.run_command('\n').rstrip())
+            exitcode = int(self.singularwrapper.run_command('\n').rstrip())
         except Exception:
             exitcode = 1
 
