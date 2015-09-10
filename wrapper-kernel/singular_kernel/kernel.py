@@ -51,11 +51,10 @@ class SingularKernel(Kernel):
         # so that bash and its children are interruptible.
         sig = signal.signal(signal.SIGINT, signal.SIG_DFL)
         try:
-            self.singularwrapper = replwrap.REPLWrapper('Singular -t --ticks-per-sec 1000 --echo=0 --no-warn --cntrlc=a', u'> ',
+            self.singularwrapper = replwrap.REPLWrapper('Singular -q', ">",
                               None,
-                              None,
-                              continuation_prompt=u'.')
-            self.singularwrapper.run_command("\n");
+                              continuation_prompt=".")
+            #self.singularwrapper.run_command("1;");
         finally:
             signal.signal(signal.SIGINT, sig)
 
@@ -80,7 +79,7 @@ class SingularKernel(Kernel):
             output = self.singularwrapper.child.before
         except EOF:
             output = self.singularwrapper.child.before + 'Restarting Singular'
-            self._start_gap()
+            self._start_singular()
 
         if not silent:
             image_filenames, output = extract_image_filenames(output)
@@ -103,7 +102,7 @@ class SingularKernel(Kernel):
             return {'status': 'abort', 'execution_count': self.execution_count}
 
         try:
-            exitcode = int(self.singularwrapper.run_command('\n').rstrip())
+            exitcode = int(self.singularwrapper.run_command('0;').rstrip())
         except Exception:
             exitcode = 1
 

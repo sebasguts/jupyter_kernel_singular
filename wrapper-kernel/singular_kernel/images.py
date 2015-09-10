@@ -7,7 +7,7 @@ import os
 _TEXT_SAVED_IMAGE = "Singular_kernel: saved image data to:"
 
 image_setup_cmd = """
-
+/home/sebastian/bin/Singular
 """
 
 # % _TEXT_SAVED_IMAGE
