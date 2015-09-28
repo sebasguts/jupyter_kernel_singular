@@ -60,7 +60,7 @@ class SingularKernel(Kernel):
         try:
             code_stripped = code.rstrip()
             self.singularwrapper.sendline( code_stripped + "//blablablabla" )
-            self.singularwrapper.expect( [ "//blablablabla" ] )
+            self.singularwrapper.expect( [ "//blablablabla\r\n" ] )
             self.singularwrapper.expect( "> " )
             output = self.singularwrapper.before
         except KeyboardInterrupt:

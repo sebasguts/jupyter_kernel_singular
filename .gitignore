@@ -1,0 +1,4 @@
+*.ipynb
+wrapper-kernel/build/*
+*__pychache__
+wrapper-kernel/jupyter_singular_wrapper/__pycache__/
