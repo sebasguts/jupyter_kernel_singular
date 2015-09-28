@@ -59,8 +59,8 @@ class SingularKernel(Kernel):
         interrupted = False
         try:
             code_stripped = code.rstrip()
-            self.singularwrapper.sendline( code_stripped + "//blablablabla" )
-            self.singularwrapper.expect( [ "//blablablabla\r\n" ] )
+            self.singularwrapper.sendline( code_stripped + "//singular_jupyter_scan_comment" )
+            self.singularwrapper.expect( [ "//singular_jupyter_scan_comment\r\n" ] )
             self.singularwrapper.expect( "> " )
             output = self.singularwrapper.before
         except KeyboardInterrupt:
