@@ -94,9 +94,44 @@ class SingularKernel(Kernel):
 
     # This is a rather poor completion at the moment
     def do_complete(self, code, cursor_pos):
+        code = code[:cursor_pos]
+        default = {'matches': [], 'cursor_start': 0,
+                   'cursor_end': cursor_pos, 'metadata': dict(),
+                   'status': 'ok'}
 
-        return {'matches': [ ], 'cursor_start': 0,
+        if not code or code[-1] == ' ':
+            return default
+
+        matches = []
+        token = code.encode( "utf-8" )
+        start = cursor_pos - len(token)
+
+        # complete bound global variables
+        
+        scan_string = "// " + code
+        
+        self.singularwrapper.send( scan_string )
+        self.singularwrapper.send( "\t\t\t" )
+        out_num = self.singularwrapper.expect( [ "Display", "> " ] )
+        
+        if out_num == 0:
+            output_list = self.singularwrapper.before[3:]
+            self.singularwrapper.send( "n\r\n" )
+        else:
+            output_list = self.singularwrapper.before
+        
+        matches.extend(output_list.split())
+        
+        self.singularwrapper.send( "\r\n" )
+        self.singularwrapper.send( ";\r\n" )
+        self.singularwrapper.expect( [ "> " ] )
+        
+        matches = [m for m in matches if m.isalnum() ]
+
+        if not matches:
+            return default
+
+        return {'matches': sorted(matches), 'cursor_start': start,
                 'cursor_end': cursor_pos, 'metadata': dict(),
                 'status': 'ok'}
-
 
