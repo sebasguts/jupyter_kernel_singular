@@ -122,8 +122,9 @@ class SingularKernel(Kernel):
         
         matches.extend(output_list.split())
         
-        self.singularwrapper.send( "\r\n" )
-        self.singularwrapper.send( ";\r\n" )
+        self.singularwrapper.sendline( "" )
+        self.singularwrapper.sendline( ";//singular_jupyter_scan_comment" )
+        self.singularwrapper.expect( [ "//singular_jupyter_scan_comment" ] )
         self.singularwrapper.expect( [ "> " ] )
         
         matches = [m for m in matches if m.isalnum() ]
