@@ -36,6 +36,8 @@ class SingularKernel(Kernel):
                      'codemirror_mode': 'singular', # note that this does not exist yet
                      'mimetype': 'text/x-singular',
                      'file_extension': '.singular'}
+    
+    help_links = [ { 'text': "Singular manual", 'url': "http://singular.uni-kl.de" } ]
 
     def __init__(self, **kwargs):
         Kernel.__init__(self, **kwargs)
