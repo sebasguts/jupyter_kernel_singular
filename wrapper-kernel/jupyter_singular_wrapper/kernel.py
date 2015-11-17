@@ -73,9 +73,9 @@ class SingularKernel(Kernel):
             self._start_singular()
 
         if not silent:
-            # Send standard output
-            stream_content = {'name': 'stdout', 'text': output}
-            self.send_response(self.iopub_socket, 'stream', stream_content)
+            if output.strip() != "":
+                stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': output } }
+                self.send_response(self.iopub_socket, 'execute_result', stream_content)
 
         if interrupted:
             return {'status': 'abort', 'execution_count': self.execution_count}
