@@ -1,4 +1,4 @@
-from IPython.kernel.zmq.kernelbase import Kernel
+from ipykernel.kernelbase import Kernel
 import pexpect
 from pexpect import replwrap, EOF, which
 
