@@ -37,7 +37,10 @@ class SingularKernel(Kernel):
                      'mimetype': 'text/x-singular',
                      'file_extension': '.singular'}
     
-    help_links = [ { 'text': "Singular manual", 'url': "http://singular.uni-kl.de" } ]
+    help_links = [ { 'text': "Singular manual", 'url': "http://www.singular.uni-kl.de/Manual/latest/index.htm" },
+                   { 'text': "Singular examples", 'url': "http://www.singular.uni-kl.de/Manual/latest/sing_842.htm" },
+                   { 'text': "Singular library", 'url': "http://www.singular.uni-kl.de/Manual/latest/sing_926.htm" },
+                   { 'text': "Singular index", 'url': "http://www.singular.uni-kl.de/Manual/latest/sing_2336.htm" } ]
 
     def __init__(self, **kwargs):
         Kernel.__init__(self, **kwargs)
