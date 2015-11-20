@@ -10,5 +10,5 @@ setup( name="jupyter_singular_wrapper"
      , url="https://github.com/sebasguts/jupyter-singular"
      , packages=["jupyter_singular_wrapper"]
      , package_dir={"jupyter_singular_wrapper": "jupyter_singular_wrapper"}
-     ,
+     , package_data={"jupyter_singular_wrapper": ["resources/logo-32x32.png","resources/logo-64x64.png"]}
      )
