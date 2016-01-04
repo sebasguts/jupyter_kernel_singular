@@ -1,3 +1,4 @@
+TreffenEmail
 *.ipynb
 wrapper-kernel/build/*
 *__pychache__
