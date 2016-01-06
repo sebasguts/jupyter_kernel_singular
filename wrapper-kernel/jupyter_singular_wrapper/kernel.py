@@ -3,6 +3,8 @@ from ipykernel.kernelbase import Kernel
 from subprocess import check_output
 from os import unlink, path
 
+from PIL import Image
+
 import base64
 import imghdr
 import re
@@ -49,7 +51,10 @@ class SingularKernel(Kernel):
     def _start_singular(self):
         sig = signal.signal(signal.SIGINT, signal.SIG_DFL)
         signal.signal(signal.SIGINT, sig)
-
+    
+    def _check_for_plot( self, code ):
+        return "plot_jupyter" in code
+    
     def do_execute(self, code, silent, store_history=True,
                    user_expressions=None, allow_stdin=False):
         if not code.strip():
@@ -59,7 +64,7 @@ class SingularKernel(Kernel):
         interrupted = False
         
         code_stripped = code.rstrip()
-        output = RunSingularCommand( code )
+        output = RunSingularCommand( code_stripped )
         
         output_error = output[ 0 ]
         output_string = output[ 1 ]
@@ -69,16 +74,31 @@ class SingularKernel(Kernel):
                 if output_string.strip() != "":
                     stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': output_string } }
                     self.send_response( self.iopub_socket, 'execute_result', stream_content )
-            
+                
+                if self._check_for_plot( code_stripped ):
+                    with Image.open("/tmp/surf.jpg" ) as imageFile:
+                        imageFile.save( "/tmp/surf.png" )
+                    
+                    with open( "/tmp/surf.png", "rb" ) as imageFile:
+                        image_string = base64.b64encode( imageFile.read() ).decode()
+                    
+                    stream_content = { 'source' : 'singular',
+                                      'data': { 'image/png': image_string },
+                                      'metadata': { 'image/png' : { 'width': 400, 'height': 400 } } }
+                    self.send_response(self.iopub_socket, 'display_data', stream_content)
             
             return {'status': 'ok', 'execution_count': self.execution_count,
                     'payload': [], 'user_expressions': {}}
         
-        elif output_error:
-            stream_content = { 'execution_count': self.execution_count, 'data': { 'text/plain': output_string } }
+        else:
+            
+            stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': "Error reached" } }
+            self.send_response( self.iopub_socket, 'execute_result', stream_content )
+            
+            stream_content = { 'execution_count': self.execution_count, 'ename': '', 'evalue': output_string, 'traceback': [ ] }
             self.send_response( self.iopub_socket, 'error', stream_content )
             return {'status': 'error', 'execution_count': self.execution_count,
-                    'ename': '', 'evalue': '1', 'traceback': []}
+                    'ename': '', 'evalue': output_string, 'traceback': [ ] }
         
     
 
