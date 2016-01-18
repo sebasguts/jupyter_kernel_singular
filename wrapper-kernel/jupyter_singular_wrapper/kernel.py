@@ -105,10 +105,6 @@ class SingularKernel(Kernel):
         
         if not output_error:
             if not silent:
-                if output_string.strip() != "":
-                    stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': output_string } }
-                    self.send_response( self.iopub_socket, 'execute_result', stream_content )
-                
                 if self._check_for_plot( code_stripped ):
                     
                     with open( "/tmp/surf.jpg", "rb" ) as imageFile:
@@ -118,7 +114,10 @@ class SingularKernel(Kernel):
                                       'data': { 'image/jpeg': image_string },
                                       'metadata': { 'image/jpeg' : { 'width': 400, 'height': 400 } } }
                     self.send_response(self.iopub_socket, 'display_data', stream_content)
-            
+                elif output_string.strip() != "":
+                    stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': output_string } }
+                    self.send_response( self.iopub_socket, 'execute_result', stream_content )
+                
             return {'status': 'ok', 'execution_count': self.execution_count,
                     'payload': [], 'user_expressions': {}}
         
