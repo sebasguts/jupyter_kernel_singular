@@ -3,15 +3,28 @@ from ipykernel.kernelbase import Kernel
 from subprocess import check_output
 from os import unlink, path
 
-from PIL import Image
-
 import base64
 import imghdr
 import re
 import signal
 import urllib
 
-from SingularPython import RunSingularCommand
+try:
+    from SingularPython import RunSingularCommand
+except ImportError:
+    import pexpect
+    from pexpect import replwrap, EOF, which
+    singular_run_command = pexpect.which( "Singular" )
+    singularwrapper = pexpect.spawnu( singular_run_command + " -q" )
+    singularwrapper.expect( "> " )
+    def RunSingularCommand( code ):
+        code_stripped = code.rstrip()
+        singularwrapper.sendline( code_stripped + "//singular_jupyter_scan_comment" )
+        singularwrapper.expect( [ "//singular_jupyter_scan_comment\r\n" ] )
+        singularwrapper.expect( "> " )
+        output = singularwrapper.before
+        return ( False, output )
+
 
 __version__ = '0.4'
 
@@ -76,15 +89,15 @@ class SingularKernel(Kernel):
                     self.send_response( self.iopub_socket, 'execute_result', stream_content )
                 
                 if self._check_for_plot( code_stripped ):
-                    with Image.open("/tmp/surf.jpg" ) as imageFile:
-                        imageFile.save( "/tmp/surf.png" )
+                    #with Image.open("/tmp/surf.jpg" ) as imageFile:
+                        #imageFile.save( "/tmp/surf.png" )
                     
-                    with open( "/tmp/surf.png", "rb" ) as imageFile:
+                    with open( "/tmp/surf.jpg", "rb" ) as imageFile:
                         image_string = base64.b64encode( imageFile.read() ).decode()
                     
                     stream_content = { 'source' : 'singular',
-                                      'data': { 'image/png': image_string },
-                                      'metadata': { 'image/png' : { 'width': 400, 'height': 400 } } }
+                                      'data': { 'image/jpeg': image_string },
+                                      'metadata': { 'image/jpeg' : { 'width': 400, 'height': 400 } } }
                     self.send_response(self.iopub_socket, 'display_data', stream_content)
             
             return {'status': 'ok', 'execution_count': self.execution_count,
@@ -92,8 +105,11 @@ class SingularKernel(Kernel):
         
         else:
             
-            stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': "Error reached" } }
+            stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': "Error:" } }
             self.send_response( self.iopub_socket, 'execute_result', stream_content )
+            stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': output_string } }
+            self.send_response( self.iopub_socket, 'execute_result', stream_content )
+            
             
             stream_content = { 'execution_count': self.execution_count, 'ename': '', 'evalue': output_string, 'traceback': [ ] }
             self.send_response( self.iopub_socket, 'error', stream_content )
