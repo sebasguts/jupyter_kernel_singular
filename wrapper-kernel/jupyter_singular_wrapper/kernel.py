@@ -10,13 +10,14 @@ import signal
 import urllib
 
 try:
-    from SingularPython import RunSingularCommand
+    from SingularPython import RunSingularCommand,GetSingularCompletion
 except ImportError:
     import pexpect
     from pexpect import replwrap, EOF, which
     singular_run_command = pexpect.which( "Singular" )
     singularwrapper = pexpect.spawnu( singular_run_command + " -q" )
     singularwrapper.expect( "> " )
+    
     def RunSingularCommand( code ):
         code_stripped = code.rstrip()
         singularwrapper.sendline( code_stripped + "//singular_jupyter_scan_comment" )
@@ -24,7 +25,27 @@ except ImportError:
         singularwrapper.expect( "> " )
         output = singularwrapper.before
         return ( False, output )
-
+    
+    def GetSingularCompletion( code, start, end ):
+        code = code[ start : end ]
+        matches = [ ]
+        scan_string = "// " + code
+        singularwrapper.send( scan_string )
+        singularwrapper.send( "\t\t\t" )
+        out_num = self.singularwrapper.expect( [ "Display", "> " ] )
+        if out_num == 0:
+            output_list = self.singularwrapper.before[3:]
+            singularwrapper.send( "n\r\n" )
+        else:
+            output_list = self.singularwrapper.before
+        matches.extend(output_list.split())
+        singularwrapper.sendline( "" )
+        singularwrapper.sendline( ";//singular_jupyter_scan_comment" )
+        singularwrapper.expect( [ "//singular_jupyter_scan_comment" ] )
+        singularwrapper.expect( [ "> " ] )
+        matches = [m for m in matches if m.isalnum() ]
+        return matches
+    
 
 __version__ = '0.4'
 
@@ -89,8 +110,6 @@ class SingularKernel(Kernel):
                     self.send_response( self.iopub_socket, 'execute_result', stream_content )
                 
                 if self._check_for_plot( code_stripped ):
-                    #with Image.open("/tmp/surf.jpg" ) as imageFile:
-                        #imageFile.save( "/tmp/surf.png" )
                     
                     with open( "/tmp/surf.jpg", "rb" ) as imageFile:
                         image_string = base64.b64encode( imageFile.read() ).decode()
@@ -117,48 +136,21 @@ class SingularKernel(Kernel):
                     'ename': '', 'evalue': output_string, 'traceback': [ ] }
         
     
-
-    ## This is a rather poor completion at the moment
-    #def do_complete(self, code, cursor_pos):
-        #code = code[:cursor_pos]
-        #default = {'matches': [], 'cursor_start': 0,
-                   #'cursor_end': cursor_pos, 'metadata': dict(),
-                   #'status': 'ok'}
-
-        #if not code or code[-1] == ' ':
-            #return default
-
-        #matches = []
-        #token = code.encode( "utf-8" )
-        #start = cursor_pos - len(token)
-
-        ## complete bound global variables
+    def do_complete( self, code, cursor_pos ):
+        code = code[:cursor_pos]
+        default = {'matches': [], 'cursor_start': 0,
+                   'cursor_end': cursor_pos, 'metadata': dict(),
+                   'status': 'ok'}
         
-        #scan_string = "// " + code
+        token = code.encode( "utf-8" )
+        start = cursor_pos - len(token)
+        completion_list = GetSingularCompletion( code, start, cursor_pos )
         
-        #self.singularwrapper.send( scan_string )
-        #self.singularwrapper.send( "\t\t\t" )
-        #out_num = self.singularwrapper.expect( [ "Display", "> " ] )
+        if not completion_list:
+            return default
         
-        #if out_num == 0:
-            #output_list = self.singularwrapper.before[3:]
-            #self.singularwrapper.send( "n\r\n" )
-        #else:
-            #output_list = self.singularwrapper.before
+        return {'matches': sorted(completion_list), 'cursor_start': start,
+                'cursor_end': cursor_pos, 'metadata': dict(),
+                'status': 'ok'}
         
-        #matches.extend(output_list.split())
-        
-        #self.singularwrapper.sendline( "" )
-        #self.singularwrapper.sendline( ";//singular_jupyter_scan_comment" )
-        #self.singularwrapper.expect( [ "//singular_jupyter_scan_comment" ] )
-        #self.singularwrapper.expect( [ "> " ] )
-        
-        #matches = [m for m in matches if m.isalnum() ]
-
-        #if not matches:
-            #return default
-
-        #return {'matches': sorted(matches), 'cursor_start': start,
-                #'cursor_end': cursor_pos, 'metadata': dict(),
-                #'status': 'ok'}
 
