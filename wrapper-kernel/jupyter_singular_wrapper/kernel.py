@@ -8,17 +8,19 @@ import imghdr
 import re
 import signal
 import urllib
+import pexpect
+from pexpect import replwrap, EOF, which
 
 try:
-    from SingularPython import RunSingularCommand,GetSingularCompletion
+    from SingularPython import InitializeSingular,RunSingularCommand,GetSingularCompletion
 except ImportError:
-    import pexpect
-    from pexpect import replwrap, EOF, which
-    singular_run_command = pexpect.which( "Singular" )
-    singularwrapper = pexpect.spawnu( singular_run_command + " -q" )
-    singularwrapper.expect( "> " )
+    def InitializeSingular( path ):
+        global singularwrapper
+        singularwrapper = pexpect.spawnu( path + " -q" )
+        singularwrapper.expect( "> " )
     
     def RunSingularCommand( code ):
+        global singularwrapper
         code_stripped = code.rstrip()
         singularwrapper.sendline( code_stripped + "//singular_jupyter_scan_comment" )
         singularwrapper.expect( [ "//singular_jupyter_scan_comment\r\n" ] )
@@ -27,6 +29,7 @@ except ImportError:
         return ( False, output )
     
     def GetSingularCompletion( code, start, end ):
+        global singularwrapper
         code = code[ start : end ]
         matches = [ ]
         scan_string = "// " + code
@@ -85,6 +88,7 @@ class SingularKernel(Kernel):
     def _start_singular(self):
         sig = signal.signal(signal.SIGINT, signal.SIG_DFL)
         signal.signal(signal.SIGINT, sig)
+        InitializeSingular( which( "Singular" ) )
     
     def _check_for_plot( self, code ):
         return "plot_jupyter" in code
