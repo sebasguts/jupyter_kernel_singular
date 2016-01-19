@@ -152,4 +152,12 @@ class SingularKernel(Kernel):
                 'cursor_end': cursor_pos, 'metadata': dict(),
                 'status': 'ok'}
         
+    def do_is_complete( self, code ):
+        code = code.rstrip()
+        if code[-1] == ";":
+            return { 'status': 'complete' }
+        else:
+            return { 'status': 'incomplete', 'indent': '  ' }
+          
+
 
