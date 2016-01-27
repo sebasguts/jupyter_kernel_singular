@@ -11,6 +11,32 @@ import urllib
 import pexpect
 from pexpect import replwrap, EOF, which
 
+from ipykernel.comm import Comm
+from ipykernel.comm import CommManager
+
+import sys
+import IPython
+
+kernel_object_for_ipython = None  
+
+def _mock_get_ipython():
+    global kernel_object_for_ipython
+    return kernel_object_for_ipython
+
+## Rewrite this incredibly stupid get_ipython method
+get_ipython = _mock_get_ipython
+sys.modules['IPython'].get_ipython = _mock_get_ipython
+sys.modules['IPython'].core.getipython.get_ipython = _mock_get_ipython
+
+from ipywidgets import *
+
+
+class own_ipython:
+    kernel = None
+    def __init__(self, kernel = None ):
+        self.kernel = kernel
+
+
 try:
     from SingularPython import InitializeSingular,RunSingularCommand,GetSingularCompletion
 except ImportError:
@@ -57,7 +83,12 @@ version_pat = re.compile(r'version (\d+(\.\d+)+)')
 class SingularKernel(Kernel):
     implementation = 'jupyter_singular_wrapper'
     implementation_version = __version__
-
+    
+    def _replace_get_ipython(self):
+        new_kernel = own_ipython(self)
+        global kernel_object_for_ipython
+        kernel_object_for_ipython = new_kernel
+    
     @property
     def language_version(self):
         m = version_pat.search(self.banner)
@@ -83,6 +114,15 @@ class SingularKernel(Kernel):
 
     def __init__(self, **kwargs):
         Kernel.__init__(self, **kwargs)
+        self._replace_get_ipython()
+        self.comm_manager = CommManager(shell=None, parent=self,
+                                        kernel=self)
+        
+        self.shell_handlers['comm_open'] = self.comm_manager.comm_open
+        self.shell_handlers['comm_msg'] = self.comm_manager.comm_msg
+        self.shell_handlers['comm_close'] = self.comm_manager.comm_close
+        
+        self.comm_manager.register_target('ipython.widget', Widget.handle_comm_opened)
         self._start_singular()
 
     def _start_singular(self):
@@ -93,12 +133,24 @@ class SingularKernel(Kernel):
     def _check_for_plot( self, code ):
         return "plot_jupyter" in code
     
+    def _process_python( self, code ):
+        if code.find( "@python" ) == -1 and code.find( "@widget" ) == -1:
+            return False
+        exec(code[7:],globals())
+        return True
+    
     def do_execute(self, code, silent, store_history=True,
                    user_expressions=None, allow_stdin=False):
-        if not code.strip():
-            return {'status': 'ok', 'execution_count': self.execution_count,
+        
+        default = {'status': 'ok', 'execution_count': self.execution_count,
                     'payload': [], 'user_expressions': {}}
-
+        
+        if not code.strip():
+            return default
+        
+        if self._process_python( code ):
+            return default
+        
         interrupted = False
         
         code_stripped = code.rstrip()
@@ -111,7 +163,9 @@ class SingularKernel(Kernel):
             if not silent:
                 if self._check_for_plot( code_stripped ):
                     
-                    with open( "/tmp/surf.jpg", "rb" ) as imageFile:
+                    filename_image = output_string.rstrip()
+                    
+                    with open( filename_image, "rb" ) as imageFile:
                         image_string = base64.b64encode( imageFile.read() ).decode()
                     
                     stream_content = { 'source' : 'singular',
