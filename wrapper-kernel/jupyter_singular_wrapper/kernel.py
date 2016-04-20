@@ -17,19 +17,34 @@ from ipykernel.comm import CommManager
 import sys
 import IPython
 
-kernel_object_for_ipython = None  
+kernel_object_for_ipython = None
 
 def _mock_get_ipython():
     global kernel_object_for_ipython
     return kernel_object_for_ipython
 
-## Rewrite this incredibly stupid get_ipython method
-get_ipython = _mock_get_ipython
-sys.modules['IPython'].get_ipython = _mock_get_ipython
-sys.modules['IPython'].core.getipython.get_ipython = _mock_get_ipython
+try:
+    import IPython
+    ipython_loaded = True
+except ImportError:
+    ipython_loaded = False
 
-from ipywidgets import *
+if ipython_loaded:
+    ## Rewrite this incredibly stupid get_ipython method
+    get_ipython = _mock_get_ipython
+    sys.modules['IPython'].get_ipython = _mock_get_ipython
+    sys.modules['IPython'].core.getipython.get_ipython = _mock_get_ipython
 
+try:
+    from ipywidgets import *
+    ipywidgets_extension_loaded = True
+except ImportError:
+    ipywidgets_extension_loaded = False
+
+class own_ipython:
+    kernel = None
+    def __init__(self, kernel = None ):
+        self.kernel = kernel
 
 class own_ipython:
     kernel = None
