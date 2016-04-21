@@ -15,7 +15,6 @@ from ipykernel.comm import Comm
 from ipykernel.comm import CommManager
 
 import sys
-import IPython
 
 kernel_object_for_ipython = None
 
@@ -151,7 +150,7 @@ class SingularKernel(Kernel):
     def _process_python( self, code ):
         if code.find( "@python" ) == -1 and code.find( "@widget" ) == -1:
             return False
-        exec(code[7:],globals())
+        exec(code[7:],globals(),locals())
         return True
     
     def do_execute(self, code, silent, store_history=True,
