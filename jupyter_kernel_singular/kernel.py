@@ -52,7 +52,7 @@ class own_ipython:
 
 
 try:
-    from SingularPython import InitializeSingular,RunSingularCommand,GetSingularCompletion
+    from PySingular import InitializeSingular,RunSingularCommand,GetSingularCompletion
 except ImportError:
     def InitializeSingular( path ):
         global singularwrapper

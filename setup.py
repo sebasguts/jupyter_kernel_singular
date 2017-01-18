@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
 
 setup( name="jupyter_kernel_singular"
-     , version="0.9"
+     , version="0.9.1"
      , description="A Jupyter kernel for singular"
      , author="Sebastian Gutsche"
      , author_email="sebastian.gutsche@gmail.com"
