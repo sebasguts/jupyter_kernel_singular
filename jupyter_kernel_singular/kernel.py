@@ -113,7 +113,7 @@ class SingularKernel(Kernel):
     @property
     def banner(self):
         if self._banner is None:
-            self._banner = "Singular Jupyter kernel"
+            self._banner = "Singular Jupyter Kernel"
         return self._banner
 
     language_info = {'name': 'Singular',
@@ -121,10 +121,10 @@ class SingularKernel(Kernel):
                      'mimetype': 'text/x-singular',
                      'file_extension': '.singular'}
     
-    help_links = [ { 'text': "Singular manual", 'url': "http://www.singular.uni-kl.de/Manual/latest/index.htm" },
-                   { 'text': "Singular examples", 'url': "http://www.singular.uni-kl.de/Manual/latest/sing_842.htm" },
-                   { 'text': "Singular library", 'url': "http://www.singular.uni-kl.de/Manual/latest/sing_926.htm" },
-                   { 'text': "Singular index", 'url': "http://www.singular.uni-kl.de/Manual/latest/sing_2336.htm" } ]
+    help_links = [ { 'text': "Singular manual", 'url': "http://www.singular.uni-kl.de/Manual/4-1-0/index.htm" },
+                   { 'text': "Singular examples", 'url': "http://www.singular.uni-kl.de/Manual/4-1-0/sing_786.htm" },
+                   { 'text': "Singular library", 'url': "http://www.singular.uni-kl.de/Manual/4-1-0/sing_870.htm" },
+                   { 'text': "Singular index", 'url': "http://www.singular.uni-kl.de/Manual/4-1-0/sing_2557.htm" } ]
 
     def __init__(self, **kwargs):
         Kernel.__init__(self, **kwargs)

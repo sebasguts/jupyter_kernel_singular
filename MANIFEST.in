@@ -1,0 +1,3 @@
+include *.md COPYING GPLv2
+recursive-include jupyter_singular_kernel *.py
+recursive-include jupyter_singular_kernel/resources *.png

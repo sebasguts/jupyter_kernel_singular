@@ -3,3 +3,6 @@ TreffenEmail
 wrapper-kernel/build/*
 *__pychache__
 wrapper-kernel/jupyter_singular_wrapper/__pycache__/
+dist/*
+MANIFEST
+build/*

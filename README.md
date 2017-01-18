@@ -1,25 +1,16 @@
 # jupyter-singular
-Jupyter kernels for Singular 
+Jupyter kernel for Singular 
 
-This is an alpha version of a jupyter kernel for Singular. All of this is non-finished and might not work,
-depending on your OS, libs, etc.
+This is a beta version of a jupyter kernel for Singular.
 
-## singular-kernel
+## Requirements
 
-The `singular-kernel` is a Jupyter kernel based on the [bash wrapper kernel](https://github.com/takluyver/bash_kernel),
-to install
+Jupyter Singular kernel can work with pexpect or SingularPython, a Python2/3
+module accessing the Singular interpreter via libSingular.
 
-```shell
-    python setup.py install
-    python -m jupyter_singular_wrapper.install
-```
+In order to work with this jupyter kernel, you need a recent version of Singular installed (>=4.1.0)
+and have the Singular executable in your path.
 
-To use it, use one of the following:
+To get a stable interface, it is highly recommended to use SingularPython, which also
+provides further functionality than the pexpect fallback solution.
 
-```shell
-    ipython notebook
-    ipython qtconsole --kernel Singular
-    ipython console --kernel Singular
-```
-
-Note that this kernel assumes that `Singular` is in the `PATH`.
