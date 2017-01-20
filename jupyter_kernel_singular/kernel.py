@@ -177,7 +177,7 @@ class SingularKernel(Kernel):
             if not silent:
                 if self._check_for_plot( code_stripped ):
                     
-                    filename_image = output_string.rstrip()
+                    filename_image = output_string.rstrip() + ".jpg"
                     
                     with open( filename_image, "rb" ) as imageFile:
                         image_string = base64.b64encode( imageFile.read() ).decode()
