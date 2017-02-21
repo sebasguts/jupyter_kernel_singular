@@ -135,8 +135,8 @@ class SingularKernel(Kernel):
         self.shell_handlers['comm_open'] = self.comm_manager.comm_open
         self.shell_handlers['comm_msg'] = self.comm_manager.comm_msg
         self.shell_handlers['comm_close'] = self.comm_manager.comm_close
-        
-        self.comm_manager.register_target('ipython.widget', Widget.handle_comm_opened)
+        if ipywidgets_extension_loaded:
+            self.comm_manager.register_target('ipython.widget', Widget.handle_comm_opened)
         self._start_singular()
 
     def _start_singular(self):
