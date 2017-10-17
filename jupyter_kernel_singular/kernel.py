@@ -129,14 +129,14 @@ class SingularKernel(Kernel):
     def __init__(self, **kwargs):
         Kernel.__init__(self, **kwargs)
         self._replace_get_ipython()
-        self.comm_manager = CommManager(shell=None, parent=self,
-                                        kernel=self)
+        #self.comm_manager = CommManager(shell=None, parent=self,
+                                        #kernel=self)
         
-        self.shell_handlers['comm_open'] = self.comm_manager.comm_open
-        self.shell_handlers['comm_msg'] = self.comm_manager.comm_msg
-        self.shell_handlers['comm_close'] = self.comm_manager.comm_close
-        if ipywidgets_extension_loaded:
-            self.comm_manager.register_target('ipython.widget', Widget.handle_comm_opened)
+        #self.shell_handlers['comm_open'] = self.comm_manager.comm_open
+        #self.shell_handlers['comm_msg'] = self.comm_manager.comm_msg
+        #self.shell_handlers['comm_close'] = self.comm_manager.comm_close
+        #if ipywidgets_extension_loaded:
+            #self.comm_manager.register_target('ipython.widget', Widget.handle_comm_opened)
         self._start_singular()
 
     def _start_singular(self):
