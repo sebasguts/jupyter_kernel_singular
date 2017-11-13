@@ -187,7 +187,7 @@ class SingularKernel(Kernel):
                                       'metadata': { 'image/jpeg' : { 'width': 400, 'height': 400 } } }
                     self.send_response(self.iopub_socket, 'display_data', stream_content)
                 elif output_string.strip() != "":
-                    stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': output_string } }
+                    stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': output_string }, 'metadata' : { } }
                     self.send_response( self.iopub_socket, 'execute_result', stream_content )
                 
             return {'status': 'ok', 'execution_count': self.execution_count,
