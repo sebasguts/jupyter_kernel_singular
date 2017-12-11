@@ -82,5 +82,9 @@ Now you can create a new notebook with Singular code.
 Example notebooks can be found [here](https://github.com/sebasguts/jupyter-singular/blob/master/Demo.ipynb)
 and [here](https://github.com/sebasguts/jupyter-singular/blob/master/WidgetTestSingular.ipynb).
 
+## Acknowledgements
+
+The syntax highlighting for Singular was provided by Vincent Klein.
+
 
 
