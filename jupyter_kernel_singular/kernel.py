@@ -179,13 +179,17 @@ class SingularKernel(Kernel):
                     
                     filename_image = output_string.rstrip() + ".jpg"
                     
-                    with open( filename_image, "rb" ) as imageFile:
-                        image_string = base64.b64encode( imageFile.read() ).decode()
-                    
-                    stream_content = { 'source' : 'singular',
-                                      'data': { 'image/jpeg': image_string },
-                                      'metadata': { 'image/jpeg' : { 'width': 400, 'height': 400 } } }
-                    self.send_response(self.iopub_socket, 'display_data', stream_content)
+                    if filename_image == ".jpg":
+                        stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': "Error: No image produced - Did you forget to load surf_jupyter.lib?" } }
+                        self.send_response( self.iopub_socket, 'execute_result', stream_content )
+                    else:
+                        with open( filename_image, "rb" ) as imageFile:
+                            image_string = base64.b64encode( imageFile.read() ).decode()
+                        
+                        stream_content = { 'source' : 'singular',
+                                          'data': { 'image/jpeg': image_string },
+                                          'metadata': { 'image/jpeg' : { 'width': 400, 'height': 400 } } }
+                        self.send_response(self.iopub_socket, 'display_data', stream_content)
                 elif output_string.strip() != "":
                     stream_content = {'execution_count': self.execution_count, 'data': { 'text/plain': output_string }, 'metadata' : { } }
                     self.send_response( self.iopub_socket, 'execute_result', stream_content )

@@ -19,7 +19,7 @@ nbextpath = os.path.join("share", "jupyter", "nbextensions", "singular-mode")
 nbconfpath = os.path.join("etc", "jupyter", "nbconfig", "notebook.d")
 
 setup( name="jupyter_kernel_singular"
-     , version="0.9.7"
+     , version="0.9.8"
      , description="A Jupyter kernel for singular"
      , author="Sebastian Gutsche"
      , author_email="sebastian.gutsche@gmail.com"
