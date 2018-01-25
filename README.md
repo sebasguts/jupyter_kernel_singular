@@ -12,7 +12,7 @@ These installation instructions are for Ubuntu Linux 16.04 (Xenial).
 ### Python and Jupyter
 
 If you want to run the Jupyter notebook locally on your computer, you need a recent version
-of Python 3 and Jupyter installed.
+of Python 2 or 3 and Jupyter installed. The use of Python 3 is recommended.
 
 To install Python3 run
 ```
@@ -69,6 +69,15 @@ make install
 ```
 For pictures to be displayed in the Notebook, you need to load a specialized Singular library, and a specialized plot command.
 You can find an example of how to use it [here](https://github.com/sebasguts/jupyter-singular/blob/master/Demo.ipynb).
+
+### Syntax highlighting
+
+On Jupyter notebook versions older than 5.3, syntax highlighting must be
+explicitly enabled by running ::
+
+    jupyter nbextension enable --sys-prefix jupyter_kernel_singular/singular-mode/main
+
+Replace ``--sys-prefix`` by ``--user`` for a user installation.
 
 
 ## Usage and examples
