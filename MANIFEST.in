@@ -1,3 +1,5 @@
 include *.md COPYING GPLv2
 recursive-include jupyter_kernel_singular *.py
 recursive-include jupyter_kernel_singular/resources *.png
+recursive-include jupyter_kernel_singular *.json
+recursive-include jupyter_kernel_singular/singular_mode *.js
