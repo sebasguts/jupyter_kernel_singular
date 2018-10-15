@@ -1,5 +1,5 @@
 {
-    "argv": ["/usr/bin/python", "-m", "jupyter_kernel_singular", "-f", "{connection_file}"],
+    "argv": ["python", "-m", "jupyter_kernel_singular", "-f", "{connection_file}"],
     "codemirror_mode": "singular",
     "display_name": "Singular",
     "language": "singular"
